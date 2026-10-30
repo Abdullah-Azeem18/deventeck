@@ -44,12 +44,24 @@ const icons: Record<ProjectKind, ReactNode> = {
 export default function ProjectCard({ p }: { p: Project }) {
   return (
     <li className="project">
+      {p.logo && (
+        <div className="project-media">
+          <img src={p.logo} alt={`${p.name} logo`} loading="lazy" />
+        </div>
+      )}
       <div className="project-head">
         <span className="project-icon" aria-hidden="true">
           {icons[p.kind]}
         </span>
         <span className="project-cat">{p.category}</span>
-        {p.year && <span className="project-year">{p.year}</span>}
+        {p.status ? (
+          <span className="project-status">
+            <span className="status-dot" aria-hidden="true" />
+            {p.status}
+          </span>
+        ) : (
+          p.year && <span className="project-year">{p.year}</span>
+        )}
       </div>
       <h2 className="project-name">{p.name}</h2>
       <p className="project-summary">{p.summary}</p>

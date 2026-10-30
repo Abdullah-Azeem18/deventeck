@@ -22,7 +22,7 @@ export default function Work() {
                 <p className="tech-tile-text">{g.text}</p>
                 {g.count > 0 ? (
                   <a className="btn btn-ghost" href={`/work/${g.slug}`}>
-                    View projects ({g.count})
+                    View projects
                   </a>
                 ) : (
                   <a className="btn btn-ghost" href="/#contact">

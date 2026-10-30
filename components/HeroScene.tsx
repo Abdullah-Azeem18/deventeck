@@ -4,26 +4,96 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import type { ServiceKey } from "@/lib/data";
 
+// Three orbit rings around the core. Services share them, so there are fewer circles.
+const rings: { radius: number; tilt: [number, number, number]; speed: number }[] = [
+  { radius: 2.35, tilt: [0.35, 0, 0.18], speed: 0.3 },
+  { radius: 2.5, tilt: [-0.55, 0.4, -0.12], speed: 0.24 },
+  { radius: 2.65, tilt: [1.2, 0.2, -0.4], speed: 0.2 },
+];
+
 type Orbit = {
   key: ServiceKey;
-  geometry: () => THREE.BufferGeometry;
-  radius: number;
-  tilt: [number, number, number];
-  speed: number;
+  ring: number; // index into rings
+  start: number; // starting angle on the ring (radians)
 };
 
+// Two services on a ring sit on opposite sides so they never bump into each other.
 const orbits: Orbit[] = [
-  { key: "ai", geometry: () => new THREE.OctahedronGeometry(0.36), radius: 3.0, tilt: [0.35, 0, 0.18], speed: 0.34 },
-  { key: "cyber", geometry: () => new THREE.BoxGeometry(0.46, 0.46, 0.46), radius: 3.55, tilt: [-0.55, 0.4, -0.12], speed: 0.26 },
-  { key: "games", geometry: () => new THREE.TorusGeometry(0.26, 0.1, 12, 32), radius: 4.1, tilt: [0.9, -0.3, 0.3], speed: 0.21 },
-  { key: "dev", geometry: () => new THREE.TetrahedronGeometry(0.42), radius: 3.3, tilt: [-0.2, 1.1, 0.5], speed: 0.3 },
-  { key: "ux", geometry: () => new THREE.DodecahedronGeometry(0.34), radius: 3.85, tilt: [1.25, 0.2, -0.4], speed: 0.24 },
+  { key: "ai", ring: 0, start: 0 },
+  { key: "dev", ring: 0, start: Math.PI },
+  { key: "cyber", ring: 1, start: 1.2 },
+  { key: "ux", ring: 1, start: 1.2 + Math.PI },
+  { key: "games", ring: 2, start: 2.4 },
 ];
+
+// Same icons as the Services section, as SVG path data (24x24 grid).
+const iconPaths: Record<ServiceKey, { stroke: string[]; dots?: [number, number][] }> = {
+  ai: {
+    stroke: [
+      "M9 6h6a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3Z",
+      "M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4",
+      "M14 12a2 2 0 1 1-4 0a2 2 0 1 1 4 0Z",
+    ],
+  },
+  cyber: { stroke: ["M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z", "m9 12 2 2 4-4"] },
+  games: {
+    stroke: ["M6 8h12a4 4 0 0 1 4 4v1a4 4 0 0 1-7.2 2.4L14 14h-4l-.8 1.4A4 4 0 0 1 2 13v-1a4 4 0 0 1 4-4Z", "M7 11v3M5.5 12.5h3"],
+    dots: [
+      [16.5, 11.5],
+      [18, 13.5],
+    ],
+  },
+  dev: { stroke: ["m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"] },
+  ux: { stroke: ["M6 3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z", "M3 9h18M9 9v12"] },
+};
+
+const BADGE_PX = 256; // texture resolution
+const BADGE_SIZE = 1.2; // size in the scene
+
+// Draws a round badge with the service icon into a canvas.
+function drawBadge(ctx: CanvasRenderingContext2D, key: ServiceKey, fill: string, ring: string, ink: string, glow: string) {
+  const s = BADGE_PX;
+  ctx.clearRect(0, 0, s, s);
+  // soft glow
+  const g = ctx.createRadialGradient(s / 2, s / 2, s * 0.3, s / 2, s / 2, s / 2);
+  g.addColorStop(0, glow);
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  // disc
+  ctx.beginPath();
+  ctx.arc(s / 2, s / 2, s * 0.36, 0, Math.PI * 2);
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.lineWidth = s * 0.022;
+  ctx.strokeStyle = ring;
+  ctx.stroke();
+  // icon
+  const icon = iconPaths[key];
+  const scale = (s * 0.4) / 24;
+  ctx.save();
+  ctx.translate(s / 2 - 12 * scale, s / 2 - 12 * scale);
+  ctx.scale(scale, scale);
+  ctx.strokeStyle = ink;
+  ctx.fillStyle = ink;
+  ctx.lineWidth = 1.8;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  for (const d of icon.stroke) ctx.stroke(new Path2D(d));
+  for (const [x, y] of icon.dots || []) {
+    ctx.beginPath();
+    ctx.arc(x, y, 0.75, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
 
 type Satellite = {
   orbit: Orbit;
-  mesh: THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
-  ringMat: THREE.LineBasicMaterial;
+  mesh: THREE.Sprite;
+  ctx: CanvasRenderingContext2D;
+  texture: THREE.CanvasTexture;
+  ring: number;
   angle: number;
   scale: number;
 };
@@ -93,29 +163,40 @@ export default function HeroScene({ active }: { active: ServiceKey | null }) {
     fill.position.set(0, 6, 10);
     scene.add(fill);
 
-    // Satellites, one per service
-    const sats: Satellite[] = orbits.map((orbit, i) => {
+    // Orbit rings
+    const ringPivots = rings.map((r) => {
       const pivot = new THREE.Group();
-      pivot.rotation.set(...orbit.tilt);
+      pivot.rotation.set(...r.tilt);
       world.add(pivot);
       const pts: THREE.Vector3[] = [];
       for (let k = 0; k <= 160; k++) {
         const a = (k / 160) * Math.PI * 2;
-        pts.push(new THREE.Vector3(Math.cos(a) * orbit.radius, 0, Math.sin(a) * orbit.radius));
+        pts.push(new THREE.Vector3(Math.cos(a) * r.radius, 0, Math.sin(a) * r.radius));
       }
-      const ringMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.16 });
-      pivot.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), ringMat));
-      const mat = new THREE.MeshStandardMaterial({ metalness: 0.4, roughness: 0.3, flatShading: true });
-      const mesh = new THREE.Mesh(orbit.geometry(), mat);
-      pivot.add(mesh);
-      return { orbit, mesh, ringMat, angle: (i / orbits.length) * Math.PI * 2, scale: 1 };
+      const mat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.16 });
+      pivot.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), mat));
+      return { pivot, mat };
+    });
+
+    // Service badges on the rings
+    const sats: Satellite[] = orbits.map((orbit) => {
+      const c = document.createElement("canvas");
+      c.width = c.height = BADGE_PX;
+      const ctx = c.getContext("2d")!;
+      const texture = new THREE.CanvasTexture(c);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      const mesh = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false }));
+      mesh.scale.setScalar(BADGE_SIZE);
+      ringPivots[orbit.ring].pivot.add(mesh);
+      return { orbit, mesh, ctx, texture, ring: orbit.ring, angle: orbit.start, scale: 1 };
     });
 
     // Beams from the core to each satellite
     const beamPositions = new Float32Array(sats.length * 6);
     const beamGeo = new THREE.BufferGeometry();
     beamGeo.setAttribute("position", new THREE.BufferAttribute(beamPositions, 3));
-    const beamMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.22 });
+    const beamMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.35 });
     world.add(new THREE.LineSegments(beamGeo, beamMat));
 
     // Star field
@@ -139,15 +220,32 @@ export default function HeroScene({ active }: { active: ServiceKey | null }) {
     const colAccent = new THREE.Color();
     const colGold = new THREE.Color();
     const colInk = new THREE.Color();
-    const black = new THREE.Color(0x000000);
+    // "#8A97FF" + 0.3 -> "rgba(138,151,255,0.3)"
+    const hexA = (hex: string, a: number) => {
+      const c = new THREE.Color(hex);
+      return `rgba(${Math.round(c.r * 255)},${Math.round(c.g * 255)},${Math.round(c.b * 255)},${a})`;
+    };
 
     const paintActive = () => {
+      const activeRing = sats.find((st) => st.orbit.key === activeRef.current)?.ring;
+      ringPivots.forEach((r, i) => {
+        r.mat.color.copy(i === activeRing ? colGold : colInk);
+        r.mat.opacity = i === activeRing ? 0.6 : 0.16;
+      });
       for (const st of sats) {
         const on = st.orbit.key === activeRef.current;
-        st.ringMat.color.copy(on ? colGold : colInk);
-        st.ringMat.opacity = on ? 0.75 : 0.16;
-        st.mesh.material.color.copy(on ? colGold : colInk.clone().lerp(colAccent, 0.35));
-        st.mesh.material.emissive.copy(on ? colGold : black).multiplyScalar(on ? 0.35 : 0);
+        drawBadge(
+          st.ctx,
+          st.orbit.key,
+          cssVar("--surface"),
+          on ? cssVar("--accent-2") : cssVar("--accent"),
+          on ? cssVar("--accent-2") : cssVar("--ink"),
+          on ? hexA(cssVar("--accent-2"), 0.45) : hexA(cssVar("--accent"), 0.3)
+        );
+        st.texture.needsUpdate = true;
+        // The picked service stays visible even when it passes behind the core.
+        st.mesh.material.depthTest = !on;
+        st.mesh.renderOrder = on ? 10 : 0;
       }
     };
 
@@ -202,6 +300,9 @@ export default function HeroScene({ active }: { active: ServiceKey | null }) {
 
     // Animation
     const tmp = new THREE.Vector3();
+    const dir = new THREE.Vector3();
+    const from = new THREE.Vector3();
+    const to = new THREE.Vector3();
     const clock = new THREE.Clock();
     let visible = true;
     let running = false;
@@ -225,15 +326,19 @@ export default function HeroScene({ active }: { active: ServiceKey | null }) {
 
       sats.forEach((st, i) => {
         const on = st.orbit.key === activeRef.current;
-        st.angle += st.orbit.speed * dt * motion * (on ? 0.35 : 1);
-        st.mesh.position.set(Math.cos(st.angle) * st.orbit.radius, 0, Math.sin(st.angle) * st.orbit.radius);
-        st.mesh.rotation.x += dt * 0.9 * motion;
-        st.mesh.rotation.y += dt * 0.6 * motion;
-        st.scale += ((on ? 1.9 : 1) - st.scale) * (motion ? 0.12 : 1);
-        st.mesh.scale.setScalar(st.scale);
+        const ring = rings[st.ring];
+        st.angle += ring.speed * dt * motion; // same speed for both badges on a ring, so they stay apart
+        st.mesh.position.set(Math.cos(st.angle) * ring.radius, 0, Math.sin(st.angle) * ring.radius);
+        st.scale += ((on ? 1.35 : 1) - st.scale) * (motion ? 0.12 : 1);
+        st.mesh.scale.setScalar(BADGE_SIZE * st.scale);
         st.mesh.getWorldPosition(tmp);
         world.worldToLocal(tmp);
-        beamPositions.set([0, 0, 0, tmp.x, tmp.y, tmp.z], i * 6);
+        // Short wire: from the outer cage to the edge of the badge, not from the centre.
+        const len = tmp.length();
+        dir.copy(tmp).divideScalar(len || 1);
+        from.copy(dir).multiplyScalar(2.1);
+        to.copy(dir).multiplyScalar(Math.max(2.1, len - BADGE_SIZE * st.scale * 0.36));
+        beamPositions.set([from.x, from.y, from.z, to.x, to.y, to.z], i * 6);
       });
       beamGeo.attributes.position.needsUpdate = true;
     };
@@ -271,6 +376,11 @@ export default function HeroScene({ active }: { active: ServiceKey | null }) {
       if (!w || !h) return;
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
+      // Keep everything (cage, orbits, badges) inside the frame.
+      const half = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const fit = 3.3 / (half * Math.min(1, camera.aspect));
+      // Camera sits a little low, so the model rides higher in the box, level with the heading.
+      camera.position.set(0, -0.85, fit + 0.6);
       camera.updateProjectionMatrix();
       renderOnce();
     };
@@ -337,7 +447,7 @@ export default function HeroScene({ active }: { active: ServiceKey | null }) {
         ref={canvasRef}
         className="scene-canvas"
         role="img"
-        aria-label="Interactive 3D model of Deventeck's core with five orbiting services"
+        aria-label="Interactive 3D model of Deventeck's core with its five services in orbit"
       />
       <div className="scene-fallback" aria-hidden="true" />
     </div>

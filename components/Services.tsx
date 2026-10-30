@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { services, type ServiceKey } from "@/lib/data";
+import ScrollReveal from "./ScrollReveal";
 
 const common = {
   width: 26,
@@ -50,8 +51,8 @@ const icons: Record<ServiceKey, ReactNode> = {
 export default function Services() {
   return (
     <section className="section" id="services">
-      <div className="wrap">
-        <div className="section-head">
+      <ScrollReveal className="wrap">
+        <div className="section-head" data-reveal>
           <h2>Five disciplines, one team.</h2>
           <p>
             Most products need more than one skill. We bring AI, security, games, engineering and design under one roof,
@@ -60,7 +61,7 @@ export default function Services() {
         </div>
         <ul className="services">
           {services.map((s) => (
-            <li className="service" key={s.key}>
+            <li className="service" key={s.key} data-reveal>
               <div className="service-icon" aria-hidden="true">
                 {icons[s.key]}
               </div>
@@ -74,7 +75,7 @@ export default function Services() {
             </li>
           ))}
         </ul>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

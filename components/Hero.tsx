@@ -10,8 +10,6 @@ const HeroScene = dynamic(() => import("./HeroScene"), {
   loading: () => <div className="scene-box" aria-hidden="true" />,
 });
 
-const defaultNote = "Drag to rotate. Pick a service to see it in orbit.";
-
 export default function Hero() {
   const [active, setActive] = useState<ServiceKey | null>(null);
   const current = services.find((s) => s.key === active);
@@ -51,7 +49,7 @@ export default function Hero() {
             ))}
           </ul>
           <p className="legend-note" aria-live="polite">
-            {current ? current.orbitNote : defaultNote}
+            {current ? current.orbitNote : ""}
           </p>
         </div>
       </div>

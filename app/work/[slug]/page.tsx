@@ -57,7 +57,7 @@ export default async function TechPage({ params }: Props) {
               </ul>
             ) : (
               <div className="tech-empty">
-                <p>Have a project like this in mind? Tell us about it and we will reply within one business day.</p>
+                <p>Have a project like this in mind? Tell us about it and we&apos;ll get back to you shortly.</p>
                 <a className="btn btn-primary" href="#contact">
                   Start a project
                 </a>

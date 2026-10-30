@@ -140,6 +140,8 @@ export type Project = {
   highlights: string[];
   stack: string[];
   link?: string; // live site or case study; leave out to hide the button
+  logo?: string; // image in public/, e.g. "/work/soc-pulse.jpg"; shown at the top of the card
+  status?: string; // e.g. "In progress"; shown as a badge
 };
 
 export const projects: Project[] = [
@@ -185,6 +187,22 @@ export const projects: Project[] = [
     stack: ["WordPress", "Elementor", "ElementsKit"],
     link: "https://raysmedicalworld.com",
   },
+  {
+    name: "SOC Pulse",
+    group: "cyber",
+    kind: "cyber",
+    category: "Cybersecurity & AI",
+    status: "In progress",
+    summary:
+      "An automated alert management system for Security Operations Center (L1) teams, turning raw SIEM alerts into triaged incidents.",
+    highlights: [
+      "Works with any SIEM: alerts are normalised into one schema and grouped into incidents",
+      "A locally hosted LLM decides to escalate, auto-respond or dismiss, and sends uncertain cases to a human",
+      "Reversible auto-response, prompt-injection defence and shift handover reports",
+    ],
+    stack: ["Python", "FastAPI", "Mistral 7B (Ollama)", "Wazuh", "Redis", "PostgreSQL", "React", "Docker"],
+    logo: "/work/soc-pulse.jpg",
+  },
 ];
 
 export const founder = {
@@ -195,7 +213,7 @@ export const founder = {
     "I started Deventeck to give businesses a technology partner that cares about their product as much as they do. Every project starts with listening, moves on a clear plan with honest timelines, and doesn't end at launch. When you work with Deventeck, you work with me directly.",
   linkedin: "https://www.linkedin.com/in/abdullahazeem472",
   // To use a photo: put it in the public/ folder (e.g. public/abdullah.jpg) and set photo: "/abdullah.jpg"
-  photo: "/abdullah.png",
+  photo: "/abdullah.jpg",
 };
 
 export const teamNote =
@@ -203,11 +221,11 @@ export const teamNote =
 
 export const contact = {
   email: "support@deventeck.com",
-  phoneDisplay: "[+92 000 0000000]",
-  phoneHref: "tel:+920000000000",
+  phoneDisplay: "+92 316 8733356",
+  phoneHref: "tel:+923168733356",
   socials: {
-    linkedin: "#",
-    github: "#",
+    linkedin: "https://www.linkedin.com/company/deventeck",
+    github: "https://github.com/Deventeck",
     instagram: "#",
     x: "#",
   },
