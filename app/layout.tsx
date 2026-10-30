@@ -31,18 +31,16 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F3F4FA" },
-    { media: "(prefers-color-scheme: dark)", color: "#080C1F" },
-  ],
+  themeColor: "#080C1F", // dark by default
 };
 
-// Applies the saved theme before paint so there is no flash.
+// The site opens in dark mode for everyone. If a visitor switched to light with the
+// toggle, their choice is remembered and applied before paint, so there is no flash.
 const themeScript = `try{var t=localStorage.getItem("dvt-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
+    <html lang="en" data-theme="dark" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
