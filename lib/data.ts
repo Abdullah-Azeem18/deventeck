@@ -213,7 +213,7 @@ export const founder = {
     "I started Deventeck to give businesses a technology partner that cares about their product as much as they do. Every project starts with listening, moves on a clear plan with honest timelines, and doesn't end at launch. When you work with Deventeck, you work with me directly.",
   linkedin: "https://www.linkedin.com/in/abdullahazeem472",
   // To use a photo: put it in the public/ folder (e.g. public/abdullah.jpg) and set photo: "/abdullah.jpg"
-  photo: "/abdullah.jpg",
+  photo: "/abdullah.png",
 };
 
 export const teamNote =
