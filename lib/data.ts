@@ -220,7 +220,7 @@ export const teamNote =
   "Every client works directly with the people who plan, design and build their product. No middlemen, no handoffs, no lost details.";
 
 export const contact = {
-  email: "support@deventeck.com",
+  email: "support@deventeck.site",
   phoneDisplay: "+92 316 8733356",
   phoneHref: "tel:+923168733356",
   socials: {

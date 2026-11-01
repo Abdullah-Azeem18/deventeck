@@ -208,11 +208,23 @@ export default function HeroScene({ active }: { active: ServiceKey | null }) {
       const ph = Math.acos(2 * Math.random() - 1);
       starPos[s * 3] = r * Math.sin(ph) * Math.cos(th);
       starPos[s * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
-      starPos[s * 3 + 2] = r * Math.cos(ph) - 4;
+      // Keep every star well behind the core, so none drifts close to the camera and looks huge.
+      starPos[s * 3 + 2] = -Math.abs(r * Math.cos(ph)) - 3;
     }
+    // Round, soft-edged dots instead of square points.
+    const dotCanvas = document.createElement("canvas");
+    dotCanvas.width = dotCanvas.height = 32;
+    const dctx = dotCanvas.getContext("2d")!;
+    const dgrad = dctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    dgrad.addColorStop(0, "rgba(255,255,255,1)");
+    dgrad.addColorStop(0.5, "rgba(255,255,255,0.8)");
+    dgrad.addColorStop(1, "rgba(255,255,255,0)");
+    dctx.fillStyle = dgrad;
+    dctx.fillRect(0, 0, 32, 32);
+    const dotTexture = new THREE.CanvasTexture(dotCanvas);
     const starGeo = new THREE.BufferGeometry();
     starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
-    const starMat = new THREE.PointsMaterial({ size: 0.05, transparent: true, opacity: 0.55, sizeAttenuation: true });
+    const starMat = new THREE.PointsMaterial({ size: 0.07, map: dotTexture, transparent: true, opacity: 0.55, depthWrite: false, sizeAttenuation: true });
     const stars = new THREE.Points(starGeo, starMat);
     scene.add(stars);
 
@@ -437,6 +449,7 @@ export default function HeroScene({ active }: { active: ServiceKey | null }) {
         if (Array.isArray(m)) m.forEach((x) => x.dispose());
         else if (m) m.dispose();
       });
+      dotTexture.dispose();
       renderer.dispose();
     };
   }, []);

@@ -4,8 +4,8 @@
 
 import { serviceOptions } from "@/lib/data";
 
-const SITE_URL = "https://deventeck.com";
-const SUPPORT_EMAIL = "support@deventeck.com";
+const SITE_URL = "https://www.deventeck.site";
+const SUPPORT_EMAIL = "support@deventeck.site";
 
 // "Ali Khan" -> "Ali". Letters only, so a name can't carry links or other text.
 function firstName(name: string) {
@@ -35,9 +35,9 @@ If there's anything you'd like to add in the meantime, such as links, files or t
 
 Best regards,
 The Deventeck team
-${SUPPORT_EMAIL} | ${SITE_URL.replace("https://", "")}
+${SUPPORT_EMAIL} | ${SITE_URL.replace("https://www.", "")}
 
-You're receiving this because you used the contact form on ${SITE_URL.replace("https://", "")}. If that wasn't you, you can ignore this email.`;
+You're receiving this because you used the contact form on ${SITE_URL.replace("https://www.", "")}. If that wasn't you, you can ignore this email.`;
 
   const html = `<!doctype html>
 <html lang="en">
@@ -75,7 +75,7 @@ You're receiving this because you used the contact form on ${SITE_URL.replace("h
         <tr>
           <td style="padding:20px 32px;border-top:1px solid #E1E4F0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#5A6180;">
             <a href="mailto:${SUPPORT_EMAIL}" style="color:#3B4BDB;text-decoration:none;">${SUPPORT_EMAIL}</a> &nbsp;|&nbsp;
-            <a href="${SITE_URL}" style="color:#3B4BDB;text-decoration:none;">${SITE_URL.replace("https://", "")}</a><br>
+            <a href="${SITE_URL}" style="color:#3B4BDB;text-decoration:none;">${SITE_URL.replace("https://www.", "")}</a><br>
             You're receiving this because you used the contact form on our website. If that wasn't you, you can ignore this email.
           </td>
         </tr>
