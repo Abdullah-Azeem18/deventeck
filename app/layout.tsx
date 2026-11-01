@@ -17,6 +17,7 @@ const body = Manrope({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.deventeck.site"),
   title: "Deventeck | AI, Cybersecurity, Games, Software & UI/UX",
   description:
     "Deventeck builds AI products, secures systems, develops games and custom software, and designs interfaces. One team from first sketch to launch.",
@@ -24,6 +25,13 @@ export const metadata: Metadata = {
     title: "Deventeck",
     description: "AI, cybersecurity, game development, custom software and UI/UX design.",
     type: "website",
+    url: "/",
+    siteName: "Deventeck",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Deventeck",
+    description: "AI, cybersecurity, game development, custom software and UI/UX design.",
   },
 };
 
