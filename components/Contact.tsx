@@ -62,7 +62,8 @@ const socialIcons: Record<keyof typeof contact.socials, { label: string; svg: Re
 const socials = (Object.keys(contact.socials) as (keyof typeof contact.socials)[])
   .filter((k) => contact.socials[k] && contact.socials[k] !== "#")
   .map((k) => ({ key: k, href: contact.socials[k], ...socialIcons[k] }));
-const hasPhone = !contact.phoneDisplay.startsWith("[");
+// Opens a WhatsApp chat (app on phones, WhatsApp Web on computers) with a ready greeting.
+const whatsappHref = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(contact.whatsappMessage)}`;
 
 const nextSteps = [
   { title: "We read your brief", text: "A real person reviews every message." },
@@ -176,25 +177,42 @@ export default function Contact() {
                   <span className="method-label">Email</span>
                   <a href={`mailto:${contact.email}`}>{contact.email}</a>
                 </div>
-                <button type="button" className="method-action" onClick={copyEmail} aria-label="Copy email address">
-                  {copied ? "Copied" : "Copy"}
-                </button>
+                <div className="method-btns">
+                  <button type="button" className="method-action" onClick={copyEmail} aria-label="Copy email address">
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                  <a className="method-action method-primary" href={`mailto:${contact.email}`} aria-label={`Email ${contact.email}`}>
+                    Email
+                  </a>
+                </div>
               </div>
 
-              {hasPhone && (
+              {contact.whatsapp && (
                 <div className="method">
-                  <span className="method-icon">
-                    <svg {...icon}>
-                      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
-                    </svg>
+                  <span className="method-icon method-icon-chat">
+                    {contact.whatsappIcon ? (
+                      <img src={contact.whatsappIcon} alt="" width={22} height={22} />
+                    ) : (
+                      <svg {...icon}>
+                        <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.4A8.5 8.5 0 1 1 21 11.5Z" />
+                        <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" />
+                      </svg>
+                    )}
                   </span>
                   <div className="method-body">
-                    <span className="method-label">Phone</span>
-                    <a href={contact.phoneHref}>{contact.phoneDisplay}</a>
+                    <span className="method-label">WhatsApp</span>
+                    <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                      {contact.phoneDisplay}
+                    </a>
                   </div>
-                  <a className="method-action" href={contact.phoneHref}>
-                    Call
-                  </a>
+                  <div className="method-btns">
+                    <a className="method-action" href={contact.phoneHref}>
+                      Call
+                    </a>
+                    <a className="method-action method-primary" href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                      Chat
+                    </a>
+                  </div>
                 </div>
               )}
             </div>

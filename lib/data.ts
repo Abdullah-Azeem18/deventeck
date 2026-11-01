@@ -272,6 +272,11 @@ export const contact = {
   email: "support@deventeck.site",
   phoneDisplay: "+92 316 8733356",
   phoneHref: "tel:+923168733356",
+  // WhatsApp number in international format, digits only (used for wa.me chat links)
+  whatsapp: "923168733356",
+  whatsappMessage: "Hi Deventeck, I'd like to discuss a project.",
+  // Optional: put WhatsApp's official icon in public/ (e.g. public/whatsapp.svg) and set it here
+  whatsappIcon: "",
   socials: {
     linkedin: "https://www.linkedin.com/company/deventeck",
     github: "https://github.com/Deventeck",
