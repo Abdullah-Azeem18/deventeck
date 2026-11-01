@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 
+// Section links scroll on the homepage; Careers is its own page.
 const links = [
-  { id: "services", label: "Services" },
-  { id: "process", label: "Process" },
-  { id: "work", label: "Work" },
-  { id: "about", label: "About" },
-  { id: "contact", label: "Contact" },
+  { id: "services", label: "Services", href: "/#services" },
+  { id: "process", label: "Process", href: "/#process" },
+  { id: "work", label: "Work", href: "/#work" },
+  { id: "about", label: "About", href: "/#about" },
+  { id: "careers", label: "Careers", href: "/careers" },
+  { id: "contact", label: "Contact", href: "/#contact" },
 ];
 
 const icon = {
@@ -26,6 +29,7 @@ const icon = {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
   const [active, setActive] = useState<string | null>(null);
   const [dark, setDark] = useState(true);
   const listRef = useRef<HTMLUListElement>(null);
@@ -41,7 +45,14 @@ export default function Header() {
 
   // Highlight the link of the section currently in the middle of the screen.
   useEffect(() => {
-    const sections = links.map((l) => document.getElementById(l.id)).filter(Boolean) as HTMLElement[];
+    if (pathname === "/careers") {
+      setActive("careers");
+      return;
+    }
+    const sections = links
+      .filter((l) => l.href.startsWith("/#"))
+      .map((l) => document.getElementById(l.id))
+      .filter(Boolean) as HTMLElement[];
     if (!sections.length) return;
     const io = new IntersectionObserver(
       (entries) => {
@@ -59,7 +70,7 @@ export default function Header() {
       io.disconnect();
       window.removeEventListener("scroll", onTop);
     };
-  }, []);
+  }, [pathname]);
 
   // Slide the highlight pill under the active link.
   useLayoutEffect(() => {
@@ -78,9 +89,12 @@ export default function Header() {
       pill.style.transform = `translateX(${(link.parentElement as HTMLElement).offsetLeft}px)`;
     };
     place();
-    window.addEventListener("resize", place);
+    // Re-measure whenever the links change size (window resize, or the web font finishing loading).
+    const ro = new ResizeObserver(place);
+    if (listRef.current) ro.observe(listRef.current);
+    listRef.current?.querySelectorAll("a").forEach((a) => ro.observe(a));
     document.fonts?.ready.then(place);
-    return () => window.removeEventListener("resize", place);
+    return () => ro.disconnect();
   }, [active]);
 
   // Theme icon follows the current theme.
@@ -115,7 +129,7 @@ export default function Header() {
             <li className="nav-indicator" ref={indicatorRef} aria-hidden="true" />
             {links.map((l) => (
               <li key={l.id}>
-                <a href={`/#${l.id}`} data-id={l.id} className={active === l.id ? "on" : undefined} aria-current={active === l.id ? "true" : undefined}>
+                <a href={l.href} data-id={l.id} className={active === l.id ? "on" : undefined} aria-current={active === l.id ? (l.id === "careers" ? "page" : "true") : undefined}>
                   {l.label}
                 </a>
               </li>
@@ -167,7 +181,7 @@ export default function Header() {
         <ul>
           {links.map((l) => (
             <li key={l.id}>
-              <a href={`/#${l.id}`} className={active === l.id ? "on" : undefined}>
+              <a href={l.href} className={active === l.id ? "on" : undefined}>
                 {l.label}
               </a>
             </li>

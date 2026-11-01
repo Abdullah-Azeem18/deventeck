@@ -64,6 +64,7 @@ const company = [
   { label: "About us", href: "/#about" },
   { label: "How we work", href: "/#process" },
   { label: "Our work", href: "/#work" },
+  { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/#contact" },
 ];
 

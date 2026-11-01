@@ -140,7 +140,7 @@ export type Project = {
   highlights: string[];
   stack: string[];
   link?: string; // live site or case study; leave out to hide the button
-  logo?: string; // image in public/, e.g. "/work/soc-pulse.jpg"; shown at the top of the card
+  logo?: string; // logo or screenshot in public/, e.g. "/work/soc-pulse.jpg"; shown at the top of the card (16:9)
   status?: string; // e.g. "In progress"; shown as a badge
 };
 
@@ -160,6 +160,21 @@ export const projects: Project[] = [
     stack: ["Next.js 15", "React 19", "TypeScript", "Three.js", "Resend"],
   },
   {
+    name: "BrandSocia",
+    group: "nextjs",
+    kind: "web",
+    category: "Agency website",
+    summary:
+      "Website for a Karachi digital marketing and branding agency, presenting its services, portfolio and blog, with a separate ads landing page for lead generation.",
+    highlights: [
+      "Hero slider with video and animated service showcases",
+      "Services, portfolio and blog, each with its own detail pages",
+      "Dedicated ads funnel page for lead generation campaigns",
+    ],
+    stack: ["Next.js", "React", "Cloudflare"],
+    link: "https://brandsocia.com",
+  },
+  {
     name: "Tax Filerz & Co.",
     group: "wordpress",
     kind: "web",
@@ -172,6 +187,7 @@ export const projects: Project[] = [
     ],
     stack: ["WordPress", "Elementor", "Google Site Kit", "WhatsApp chat"],
     link: "https://taxfilerz.com",
+    logo: "/work/taxfilerz.jpg",
   },
   {
     name: "Rays Medical World",
@@ -186,6 +202,39 @@ export const projects: Project[] = [
     ],
     stack: ["WordPress", "Elementor", "ElementsKit"],
     link: "https://raysmedicalworld.com",
+    logo: "/work/rays.jpg",
+  },
+  {
+    name: "Al-Hamd Traders",
+    group: "wordpress",
+    kind: "web",
+    category: "Engineering company website",
+    summary:
+      "Website for a Lahore HVAC and MEP engineering contractor serving restaurants, hotels, banks and commercial buildings across Pakistan.",
+    highlights: [
+      "Service pages for HVAC installation, AC repair, maintenance and complete MEP contracting",
+      "Client logo showcase, project gallery and featured videos",
+      "Step-by-step process, FAQ section, quote requests and cookie consent",
+    ],
+    stack: ["WordPress", "Elementor", "GS Logo Slider", "CookieAdmin"],
+    link: "https://alhamdtraders.com",
+    logo: "/work/alhamd.jpg",
+  },
+  {
+    name: "AegisGuard",
+    group: "cyber",
+    kind: "cyber",
+    category: "Cybersecurity SaaS",
+    summary:
+      "Attack surface management platform that lets teams see their network the way an attacker does, with a React front end and a Python Flask back end.",
+    highlights: [
+      "Presents continuous reconnaissance, automated vulnerability scanning and threat intelligence in one command center",
+      "Pricing plans with sign-in and get-started flows",
+      "Dark, security-focused interface with glowing accents",
+    ],
+    stack: ["React", "Python", "Flask", "Cloudflare Pages"],
+    link: "https://main.aegisguard.pages.dev",
+    logo: "/work/aegisguard.jpg",
   },
   {
     name: "SOC Pulse",
@@ -233,3 +282,98 @@ export const contact = {
 
 export const serviceOptions = [...services.map((s) => s.title), "Not sure yet"];
 export const budgetOptions = ["Under $1,000", "$1,000 – $5,000", "$5,000 – $20,000", "$20,000+"];
+
+// ----- Careers (/careers) -----
+
+export type JobIcon = "bidding" | "sales" | "code" | "design" | "shield" | "ai" | "briefcase";
+
+export type Job = {
+  slug: string; // unique id, e.g. "frontend-developer"; the role's link is /careers#slug
+  title: string;
+  department: string; // e.g. "Business development", "Engineering"
+  icon?: JobIcon;
+  posted?: string; // date posted, "YYYY-MM-DD"; roles from the last 14 days get a "New" badge
+  type: string; // e.g. "Full-time", "Part-time", "Internship"
+  location: string; // e.g. "Remote", "Karachi (on-site)", "Hybrid"
+  summary: string;
+  responsibilities: string[];
+  requirements: string[];
+};
+
+// Add a role here when you're hiring; remove it when the position is filled.
+// With no roles listed, the page still accepts general applications (CVs).
+export const jobs: Job[] = [
+  {
+    slug: "business-developer-bidding",
+    title: "Business Developer (Bidding)",
+    department: "Business development",
+    icon: "bidding",
+    posted: "2026-11-01",
+    type: "Full-time",
+    location: "Karachi or Remote",
+    summary:
+      "Find and win projects for Deventeck on Upwork, Freelancer, Fiverr and LinkedIn by writing proposals that clients actually reply to.",
+    responsibilities: [
+      "Search bidding platforms and LinkedIn every day for projects that match our services: web and software development, AI, cybersecurity, games and UI/UX design",
+      "Write a tailored proposal for each project, built around the client's brief rather than a copy-paste template",
+      "Read technical briefs, ask clients the right questions, and work with our developers on estimates and timelines",
+      "Follow up with leads and keep conversations moving until the contract starts",
+      "Keep our platform profiles, portfolio and case studies up to date",
+      "Track bids, replies and wins, and share a short weekly report on what is working",
+    ],
+    requirements: [
+      "At least 1 year of bidding on Upwork, Freelancer or Fiverr, with projects you have won",
+      "Excellent written English: clear, professional and persuasive",
+      "Enough technical understanding to read software briefs (website, web app, API, UI/UX)",
+      "Organised and consistent, and comfortable working towards targets",
+      "Bonus: experience bidding for an IT or software agency",
+    ],
+  },
+  {
+    slug: "sales-executive",
+    title: "Sales Executive",
+    department: "Sales",
+    icon: "sales",
+    posted: "2026-11-01",
+    type: "Full-time",
+    location: "Karachi or Remote",
+    summary:
+      "Bring in new clients for Deventeck: reach out to businesses, understand what they need, and turn conversations into signed projects.",
+    responsibilities: [
+      "Find and contact potential clients through LinkedIn, email and calls",
+      "Run discovery calls to understand each client's goals and match them to the right service",
+      "Prepare proposals, quotes and presentations together with the team",
+      "Manage your pipeline from first contact to signed deal, with timely follow-ups",
+      "Keep client records and deal notes up to date",
+      "Build long-term relationships so clients return and refer others",
+    ],
+    requirements: [
+      "1 to 2 years in sales or business development, ideally for an IT or software company",
+      "Confident spoken and written English; Urdu is a plus for local clients",
+      "Comfortable leading calls and video meetings with local and international clients",
+      "Able to explain technical services in simple, non-technical terms",
+      "Self-driven, target-oriented and strong at follow-up",
+      "Bonus: experience with LinkedIn Sales Navigator or a CRM",
+    ],
+  },
+  // {
+  //   slug: "frontend-developer",
+  //   title: "Frontend Developer (Next.js)",
+  //   department: "Engineering",
+  //   icon: "code",
+  //   posted: "2026-12-01",
+  //   type: "Full-time",
+  //   location: "Remote",
+  //   summary: "Build fast, polished websites and web apps for our clients with Next.js and React.",
+  //   responsibilities: ["Build pages and components from designs", "Work with the team on client projects"],
+  //   requirements: ["1+ year with React or Next.js", "Good eye for detail and design"],
+  // },
+];
+
+export const careersPerks = [
+  { title: "Real client projects", text: "Work on products that ship and get used, not practice exercises." },
+  { title: "Many disciplines", text: "Learn alongside people working in AI, security, games, software and design." },
+  { title: "Grow with us", text: "Take on more responsibility as you grow, with direct feedback along the way." },
+];
+
+export const applicationRoles = () => [...jobs.map((j) => j.title), "General application"];
