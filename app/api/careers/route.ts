@@ -82,7 +82,9 @@ export async function POST(req: Request) {
   const id = crypto.randomUUID();
   // Safe file name: "Ali Khan" -> "ali-khan-cv.pdf"
   const slug = app.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "applicant";
-  const fileName = `${slug}-cv.${ext}`;
+  // A short unique code keeps every file name different, even when two people share a name,
+  // so email apps that cache previews by file name always show the right CV.
+  const fileName = `${slug}-cv-${id.slice(0, 6)}.${ext}`;
   const path = `${id}/${fileName}`;
 
   // 1. Store the CV and the application in Supabase.
