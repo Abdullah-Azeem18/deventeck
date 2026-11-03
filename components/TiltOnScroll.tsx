@@ -35,7 +35,8 @@ export default function TiltOnScroll({
 
     const apply = (p: number) => {
       const small = window.innerWidth < 640;
-      const maxDeg = small ? 5 : 11;
+      // Gentler tilt on phones and tablets, where tiles fill the width and a big angle looks heavy.
+      const maxDeg = small ? 5 : window.innerWidth < 1020 ? 6 : 11;
       const eased = 1 - (1 - p) * (1 - p);
       const rest = 1 - eased;
       el.style.transform = `translateY(${rest * (small ? 40 : 90)}px) rotate(${direction * maxDeg * rest}deg) scale(${1 - rest * 0.08})`;

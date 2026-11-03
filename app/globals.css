@@ -207,6 +207,7 @@ section{position:relative}
   background:radial-gradient(120% 90% at 85% 10%,rgba(138,151,255,.28),transparent 60%),radial-gradient(90% 80% at 10% 100%,rgba(230,194,125,.18),transparent 60%),#080C1F;
   border:1px solid rgba(238,241,250,.1);
   transition:transform .4s cubic-bezier(.2,.7,.2,1);
+  max-height:min(560px,78svh);width:100%;
 }
 .tech-art-link:hover .tech-art{transform:scale(1.015)}
 .tech-art-code{
@@ -403,7 +404,7 @@ section{position:relative}
 .job-icon{width:52px;height:52px;flex:none;display:grid;place-items:center;border-radius:16px;background:var(--bg-2);color:var(--accent);border:1px solid var(--line)}
 .job-main{min-width:0;display:grid;gap:8px}
 .job-kicker{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
-.job-new{padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent-2) 20%,transparent);color:var(--accent-2);font-size:11px;letter-spacing:.06em}
+.job-new{padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent-2) 20%,transparent);color:var(--accent-2);font-size:12px;letter-spacing:.06em}
 .job h3{margin:0;font-family:var(--display);font-weight:600;font-size:clamp(21px,2vw,26px);line-height:1.15;letter-spacing:-.02em}
 .job-meta{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px}
 .job-meta li{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--muted)}
@@ -447,10 +448,12 @@ section{position:relative}
 .site-footer{position:relative;overflow:hidden;padding:88px 0 0;border-top:1px solid var(--line);background:linear-gradient(180deg,transparent,var(--bg-2))}
 .footer-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:24px 48px;padding-bottom:56px;border-bottom:1px solid var(--line)}
 .footer-pitch{margin:0;max-width:16ch;font-family:var(--display);font-weight:600;font-size:clamp(30px,4vw,52px);line-height:1.05;letter-spacing:-.03em}
-.footer-email{display:inline-flex;align-items:center;gap:12px;min-height:44px;font-family:var(--display);font-weight:500;font-size:clamp(20px,2.4vw,30px);letter-spacing:-.02em;text-decoration:none;color:var(--ink);border-bottom:2px solid var(--accent-2);padding-bottom:6px;overflow-wrap:anywhere}
-.footer-email svg{flex:none;color:var(--accent-2);transition:transform .25s cubic-bezier(.2,.7,.2,1)}
+.footer-email{display:inline-flex;align-items:center;gap:12px;min-height:44px;font-family:var(--display);font-weight:500;font-size:clamp(15px,4.3vw,30px);letter-spacing:-.02em;text-decoration:none;color:var(--ink);border-bottom:2px solid var(--accent-2);padding-bottom:6px;white-space:nowrap}
+.footer-email svg{flex:none;width:clamp(18px,4vw,28px);height:auto;color:var(--accent-2);transition:transform .25s cubic-bezier(.2,.7,.2,1)}
 .footer-email:hover svg{transform:translate(3px,-3px)}
+@media (min-width: 700px){.footer-email{font-size:clamp(20px,2.4vw,30px)}}
 .footer-grid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:40px;padding:56px 0}
+.footer-brand .brand{display:inline-flex}
 .footer-brand p{margin:18px 0 0;max-width:36ch;color:var(--muted);font-size:15px}
 .footer-reach{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:24px}
 .footer-reach .socials{list-style:none;margin:0;padding:0}
